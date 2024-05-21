@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OpeniT.PowerbiDashboardApp</title>
+
+    <partial name="~/Views/Shared/Partials/_GlobalStylesPartial.cshtml" />
+    @RenderSection("StyleSheets", required: false)
+</head>
+<body>
+	@Html.AntiForgeryToken()
+	<div class="ra-layout">
+		<div class="ra-header border-bottom">
+			<div class="ra-header-container vw-100 p-2">
+				<div class="leftnavbar ra-header-item ra-toggler collapse show p-1 pl-2">
+					<a id="leftnavToggle" class="text-dark" data-toggle="collapse" href="#" data-target=".leftnavbar" role="button" style="font-size:1rem">
+						<i class="fa fa-bars fa-lg"></i>
+					</a>
+				</div>
+				<div class="ra-header-item ra-header-right">
+					<partial name="~/Views/Shared/Partials/_LoginPartial.cshtml" />
+				</div>
+			</div>
+		</div>
+
+		<div class="ra-container">
+			<div class="leftnavbar ra-left-nav collapse show">
+				<div class="ra-nav-head p-3 text-center">
+					<div class="m-1 pb-2">
+						<img class="ra-nav-img rounded-circle" src="/api/dashboard/image" onerror="this.onerror=null; this.src='/images/ImgPlaceholder.png'" alt="" />
+					</div>
+					<span class="ra-nav-head-text text-white">
+
+						@if (ViewContext.ViewData["Account"] != null)
+						{
+							var user = (ApplicationUser)ViewContext.ViewData["Account"];
+							@(user?.InternalAccount?.DisplayName ?? User.Identity.Name);
+						}
+
+					</span>
+				</div>
+				<div class="ra-nav-list pt-2">
+					<div class="ra-nav-item @(ViewContext.ViewData[nameof(DashboardController)] != null ? "ra-nav-item-active":"" )">
+						<a href="/dashboard">
+							<span class="ra-nav-icon"><i class="fa fa-chart-pie"></i></span><span class="ra-nav-link">Dashboard</span>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="ra-body">
+
+				@RenderBody()
+
+				
+				<div class="ra-content-footer p-3 border-top">
+					<span style="font-weight:600;">&copy; @DateTime.Now.Year Open iT, Inc.</span><span> All rights reserved</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <partial name="~/Views/Shared/Partials/_GlobalScriptsPartial.cshtml" />
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

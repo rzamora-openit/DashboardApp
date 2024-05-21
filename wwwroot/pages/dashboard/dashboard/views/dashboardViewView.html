@@ -1,0 +1,17 @@
+﻿<!--loading-->
+<div ng-if="$ctrl.componentContext.loading">
+	<i class="fas fa-spinner fa-spin"></i> Loading...
+</div>
+
+<div ng-if="$ctrl.componentContext.loaded" ng-init="ctrl = $ctrl; ctrl.getEmbedInfo()" class="d-flex flex-column h-100 p-2">
+	<div class="text-right mb-2 h-auto">
+		<button class="btn btn-sm btn-outline-dark" ng-if="ctrl.lastRefresh">Last Refresh: {{ctrl.lastRefresh.endTime | date:'yyyy-MM-dd hh:mm' }}</button>
+		<button class="btn btn-sm btn-success" ng-click="ctrl.refresh()" ng-if="!ctrl.refreshing && !ctrl.pendingRefresh" ng-disabled="ctrl.isBusy"><i class="fa fa-sync"></i> Refresh Dataset</button>
+		<button class="btn btn-sm btn-success" ng-if="ctrl.refreshing || ctrl.pendingRefresh" title="Dataset Refresh on triggered at {{ctrl.pendingRefresh.startTime | date:'yyyy-MM-dd hh:mm' }}"><i class="fas fa-spinner fa-spin"></i> Refreshing...</button>
+	</div>
+
+	<div class="flex-grow-1">
+		<div id="report-container" class="h-100"></div>
+		<div class="error-container"></div>
+	</div>
+</div>

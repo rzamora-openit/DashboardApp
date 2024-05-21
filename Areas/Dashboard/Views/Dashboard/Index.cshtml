@@ -1,0 +1,29 @@
+﻿@{
+	ViewData["Title"] = "Dashboard";
+	Layout = "~/Views/Shared/Layouts/_Layout.cshtml";
+
+}
+
+@section Stylesheets {
+	<link href="~/lib/angular-ui-notification/angular-ui-notification.css" rel="stylesheet" asp-append-version="true" />
+}
+
+@section Scripts{
+	<script src="~/lib/angular-ui-notification/angular-ui-notification.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/lib/angular-smart-table/smart-table.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/lib/powerbi-client/dist/powerbi.min.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+
+	<script src="~/pages/site/js/app-site.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/pages/site/js/app-sitedashboard.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+
+	<script src="~/pages/dashboard/dashboard/js/app-dashboard.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/pages/dashboard/dashboard/js/dashboardController.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/pages/dashboard/dashboard/js/dashboardTableComponent.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+	<script src="~/pages/dashboard/dashboard/js/dashboardViewComponent.js" nws-csp-add-nonce="true" asp-append-version="true"></script>
+}
+
+<div class="ra-content" ng-app="app-dashboard">
+	<div class="ra-fill-view ra-content-flex" ng-view>
+
+	</div>
+</div>

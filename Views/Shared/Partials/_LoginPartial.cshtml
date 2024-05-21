@@ -1,0 +1,24 @@
+@using System.Security.Principal
+
+@if (User.Identity.IsAuthenticated)
+{
+	<div class="btn-group">
+		<button type="button" class="btn btn-light border dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			@if (ViewContext.ViewData["Account"] != null)
+			{
+				var user = (ApplicationUser)ViewContext.ViewData["Account"];
+				@User.Identity.Name
+			}
+		</button>
+		<div class="dropdown-menu dropdown-menu-right">
+			<a class="dropdown-item" asp-area="Account" asp-controller="Logout" asp-action="Index">Logout</a>
+		</div>
+	</div>
+}
+@*else
+{
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+		</li>
+}*@
+

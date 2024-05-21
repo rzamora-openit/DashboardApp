@@ -1,0 +1,27 @@
+﻿<div class="ra-view-header ra-view-header-flex p-0 pr-4">
+	<div class="ra-nav-link ra-breadcrumb pl-4" style="cursor: pointer" ng-click="ctrl.navigate('/')">
+		<i class="ra-breadcrumb-icon fa fa-chart-pie"></i> Dashboard
+	</div>
+
+	<div class="ra-nav-link ra-breadcrumb" ng-click="" ng-if="ctrl.stateContext.breadcrumb">
+		{{ctrl.stateContext.breadcrumb}}
+	</div>
+</div>
+
+<!--invalidActivity-->
+<div ng-if="ctrl.stateContext.invalidActivity">
+	Server Error or No Access
+	<br />
+	<span ng-repeat="error in ctrl.errorData" class="text-danger">{{error}}<br /></span>
+</div>
+
+<dashboard-table-component ng-if="ctrl.stateContext.table"
+						   state-context="ctrl.stateContext">
+
+</dashboard-table-component>
+
+<dashboard-view-component ng-if="ctrl.stateContext.view"
+						  class="ra-cover-fill p-2"
+						  state-context="ctrl.stateContext">
+
+</dashboard-view-component>
