@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpeniT.PowerbiDashboardApp.Data;
 using OpeniT.PowerbiDashboardApp.Helpers;
