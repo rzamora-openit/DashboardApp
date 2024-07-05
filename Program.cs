@@ -11,101 +11,123 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using OpeniT.PowerbiDashboardApp.Data;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
+using OpeniT.PowerbiDashboardApp.Security;
+using OpeniT.PowerbiDashboardApp.Security.Handler;
 
 namespace OpeniT.PowerbiDashboardApp
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
-            var services = builder.Services;
+	public class Program
+	{
+		public static void Main(string[] args)
+		{
+			var builder = WebApplication.CreateBuilder(args);
+			var services = builder.Services;
 
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnection")), ServiceLifetime.Transient);
+			services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnection")), ServiceLifetime.Transient);
 
-            services.AddTransient<ApplicationLogger>();
-            services.AddTransient<DataRepository>();
+			services.AddTransient<IApplicationLogger, ApplicationLogger>();
+			services.AddTransient<IDataRepository, DataRepository>();
 
-            services.AddSingleton<AzureQueryHelper>();
-            services.AddSingleton<AzureQueryRepository>();
+			services.AddSingleton<IAzureQueryHelper, AzureQueryHelper>();
+			services.AddSingleton<IAzureQueryRepository, AzureQueryRepository>();
 
-            services.AddSingleton<PowerBIQueryHelper>();
-            services.AddSingleton<PowerBIQueryRepository>();
-            services.AddScoped<PowerBIEmbedHelper>();
+			services.AddSingleton<IPowerBIQueryHelper, PowerBIQueryHelper>();
+			services.AddSingleton<IPowerBIQueryRepository, PowerBIQueryRepository>();
+			services.AddScoped<IPowerBIEmbedHelper, PowerBIEmbedHelper>();
 
-            services.AddAuthentication()
-               .AddOpenIdConnect(options =>
-               {
-                   options.Authority = builder.Configuration["Microsoft:Authority"];
-                   options.ClientId = builder.Configuration["Microsoft:ClientId"];
-                   options.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
-               });
+			services.AddScoped<IAccessProfileHelper, AccessProfileHelper>();
+			services.AddScoped<IFeatureAccessHelper, FeatureAccessHelper>();
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Internal", policy => policy.RequireAssertion(Security.Assertions.IsInternal));
-            });
+			services.AddTransient<ISeedContext, SeedContext>();
+			services.AddTransient<ISiteInitHelper, SiteInitHelper>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-               .AddEntityFrameworkStores<DataContext>()
-               .AddDefaultTokenProviders();
+			services.AddTransient<IAuthorizationHandler, FeatureAccessHandler>();
+			services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.AccessDeniedPath = new PathString("/NotFound");
-            });
+			services.AddAuthentication()
+			   .AddOpenIdConnect(options =>
+			   {
+				   options.Authority = builder.Configuration["Microsoft:Authority"];
+				   options.ClientId = builder.Configuration["Microsoft:ClientId"];
+				   options.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
+			   });
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+			services.AddAuthorizationBuilder()
+				.AddPolicy("Internal", policy => policy.RequireAssertion(Security.Assertions.IsInternal));
 
-                options.HttpOnly = HttpOnlyPolicy.Always;
-                options.Secure = CookieSecurePolicy.Always;
-            });
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+			   .AddEntityFrameworkStores<DataContext>()
+			   .AddDefaultTokenProviders();
 
-            services
-              .AddControllersWithViews(options =>
-              {
-                  var policy = new AuthorizationPolicyBuilder()
-                      .RequireAuthenticatedUser()
-                      .Build();
-                  options.Filters.Add(new AuthorizeFilter(policy));
-              })
-              .AddNewtonsoftJson(options =>
-              {
-                  options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-              });
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.AccessDeniedPath = new PathString("/NotFound");
+			});
 
-            services.AddHttpContextAccessor();
+			services.Configure<CookiePolicyOptions>(options =>
+			{
+				options.CheckConsentNeeded = context => true;
+				options.MinimumSameSitePolicy = SameSiteMode.None;
 
-            var app = builder.Build();
+				options.HttpOnly = HttpOnlyPolicy.Always;
+				options.Secure = CookieSecurePolicy.Always;
+			});
 
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
+			services
+			  .AddControllersWithViews(options =>
+			  {
+				  var policy = new AuthorizationPolicyBuilder()
+					  .RequireAuthenticatedUser()
+					  .Build();
+				  options.Filters.Add(new AuthorizeFilter(policy));
+			  })
+			  .AddNewtonsoftJson(options =>
+			  {
+				  options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+			  });
 
-            app.UseHttpsRedirection();
+			services.AddHttpContextAccessor();
 
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseCookiePolicy();
+			var app = builder.Build();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
+			if (!app.Environment.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Home/Error");
+				app.UseHsts();
+			}
 
-            app.MapControllerRoute(name: "areaRoute", pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
-            app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+			app.UseHttpsRedirection();
 
-            app.Run();
-        }
-    }
+			app.UseStaticFiles();
+			app.UseRouting();
+			app.UseCookiePolicy();
+
+			app.UseAuthentication();
+			app.UseAuthorization();
+
+			app.MapControllerRoute(name: "areaRoute", pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+			app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+
+			#region preprocess
+			using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+			{
+				var seedContext = serviceScope.ServiceProvider.GetService<ISeedContext>();
+				var siteInithelper = serviceScope.ServiceProvider.GetService<ISiteInitHelper>();
+
+				seedContext.Seed().Wait();
+				siteInithelper.InitFeatureAccess().Wait();
+			}
+			#endregion preprocess
+
+			app.Run();
+		}
+	}
 }

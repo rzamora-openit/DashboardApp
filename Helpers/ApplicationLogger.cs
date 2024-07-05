@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
-using OpeniT.PowerbiDashboardApp.Data;
-using OpeniT.PowerbiDashboardApp.Models.Application;
-using System.Threading.Tasks;
-using System;
 using Newtonsoft.Json;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
+using OpeniT.PowerbiDashboardApp.Models.Application;
+using System;
+using System.Threading.Tasks;
 
 namespace OpeniT.PowerbiDashboardApp.Helpers
 {
-	public class ApplicationLogger
+	public class ApplicationLogger : IApplicationLogger
 	{
-		private readonly DataRepository dataRepository;
+		private readonly IDataRepository dataRepository;
 		private readonly IHttpContextAccessor httpContextAccessor;
 
-		public ApplicationLogger(DataRepository dataRepository,
+		public ApplicationLogger(IDataRepository dataRepository,
 			IHttpContextAccessor httpContextAccessor)
 		{
 			this.dataRepository = dataRepository;

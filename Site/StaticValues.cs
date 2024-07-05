@@ -5,6 +5,7 @@
 		public static bool BlockAllEmail = false;
 
 		#region access
+		public static bool EnableGlobalInternalAccess = false;
 		public static int AzureGroupInfoSyncInterval = 10;
 		#endregion access
 

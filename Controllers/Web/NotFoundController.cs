@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OpeniT.PowerbiDashboardApp.Data;
-using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
-using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OpeniT.PowerbiDashboardApp.Controllers.Web
 {
@@ -16,13 +16,13 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Web
 	{
 		private string ControllerName = nameof(NotFoundController);
 
-		private readonly ApplicationLogger logger;
-		private readonly DataRepository dataRepository;
+		private readonly IApplicationLogger logger;
+		private readonly IDataRepository dataRepository;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
-		public NotFoundController(ApplicationLogger logger,
-			DataRepository dataRepository,
+		public NotFoundController(IApplicationLogger logger,
+			IDataRepository dataRepository,
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager)
 		{

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpeniT.PowerbiDashboardApp.Data;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using OpeniT.PowerbiDashboardApp.Models.Objects;
 using System;
@@ -17,11 +19,11 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 	{
 		private string ControllerName = "api/dashboard/" + nameof(PowerbiReferenceController);
 
-		private readonly DataRepository dataRepository;
-		private readonly ApplicationLogger logger;
+		private readonly IDataRepository dataRepository;
+		private readonly IApplicationLogger logger;
 
-		public PowerbiReferenceController(DataRepository dataRepository,
-			ApplicationLogger logger)
+		public PowerbiReferenceController(IDataRepository dataRepository,
+			IApplicationLogger logger)
 		{
 			this.dataRepository = dataRepository;
 			this.logger = logger;

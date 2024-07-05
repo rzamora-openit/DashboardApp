@@ -11,10 +11,11 @@ using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using System.Collections.Generic;
 using System.Collections;
 using OpeniT.PowerbiDashboardApp.Models.Objects;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 
 namespace OpeniT.PowerbiDashboardApp.Data
 {
-	public class DataRepository
+    public class DataRepository : IDataRepository
 	{
 		private readonly DataContext context;
 		private readonly UserManager<ApplicationUser> userManager;
@@ -254,5 +255,96 @@ namespace OpeniT.PowerbiDashboardApp.Data
 			this.context.PowerbiReferences.Remove(powerbiReference);
 		}
 		#endregion
+
+		#region FeatureAccess		
+		public async void AddFeatureAccess(FeatureAccess featureAccess)
+		{
+			await this.context.FeatureAccesses.AddAsync(featureAccess);
+		}
+		public void UpdateFeatureAccess(FeatureAccess featureAccess)
+		{
+			this.context.FeatureAccesses.Update(featureAccess);
+		}
+		public void RemoveFeatureAccess(FeatureAccess featureAccess)
+		{
+			this.context.FeatureAccesses.Remove(featureAccess);
+		}
+		public async Task<IEnumerable<FeatureAccess>> GetFeatureAccessesAsync()
+		{
+			return await this.context.FeatureAccesses
+				.Include(x => x.Accesses)
+				.ToListAsync();
+		}
+		public async Task<FeatureAccess> GetFeatureAccessById(int Id)
+		{
+			return await this.context.FeatureAccesses.Where(x => x.Id == Id)
+				.Include(x => x.Accesses)
+				.FirstOrDefaultAsync();
+		}
+		public async Task<FeatureAccess> GetFeatureAccessByFeatureName(string featureName)
+		{
+			return await this.context.FeatureAccesses.Where(x => x.FeatureName == featureName)
+				.Include(x => x.Accesses)
+				.FirstOrDefaultAsync();
+		}
+		#endregion FeatureAccess
+
+		#region Access		
+		public async void AddAccess(Access Access)
+		{
+			await this.context.Accesses.AddAsync(Access);
+		}
+		public void UpdateAccess(Access Access)
+		{
+			this.context.Accesses.Update(Access);
+		}
+		public void RemoveAccess(Access Access)
+		{
+			this.context.Accesses.Remove(Access);
+		}
+		public async Task<IEnumerable<Access>> GetAccessesAsync()
+		{
+			return await this.context.Accesses.ToListAsync();
+		}
+		public async Task<IEnumerable<Access>> GetAccessesByPriviledgeInfoAsync(string email = null, IEnumerable<string> groups = null, IEnumerable<string> role = null)
+		{
+			var q = this.context.Accesses.AsQueryable();
+			if (string.IsNullOrEmpty(email))
+			{
+				q.Where(x => (x.Type == Security.AccessTypes.User && x.Reference == email));
+			}
+			if (groups != null && groups.Any())
+			{
+				q.Where(x => (x.Type == Security.AccessTypes.Group && groups.Contains(x.Reference)));
+			}
+			if (role != null && role.Any())
+			{
+				q.Where(x => (x.Type == Security.AccessTypes.Role && role.Contains(x.Reference)));
+			}
+			return await q.ToListAsync();
+		}
+		public async Task<Access> GetAccessById(int Id)
+		{
+			return await this.context.Accesses.FirstOrDefaultAsync(x => x.Id == Id);
+		}
+		public async Task<IEnumerable<string>> GetDistinctGroupIds()
+		{
+			return await this.context.Accesses
+				.Where(x => x.Type == Security.AccessTypes.Group)
+				.Select(x => x.AzureId)
+				.Distinct()
+				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<string>> GetDistinctRoleIds()
+		{
+			return await this.context.Accesses
+				.Where(x => x.Type == Security.AccessTypes.Role)
+				.Select(x => x.AzureId)
+				.Distinct()
+				.ToListAsync();
+		}
+
+		#endregion Access
 	}
 }
