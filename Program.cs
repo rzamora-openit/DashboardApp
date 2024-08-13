@@ -17,6 +17,7 @@ using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Security;
 using OpeniT.PowerbiDashboardApp.Security.Handler;
+using System.Reflection;
 
 namespace OpeniT.PowerbiDashboardApp
 {
@@ -27,7 +28,11 @@ namespace OpeniT.PowerbiDashboardApp
 			var builder = WebApplication.CreateBuilder(args);
 			var services = builder.Services;
 
-			services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnection")), ServiceLifetime.Transient);
+			var migrationsAssembly = typeof(DataContext).GetTypeInfo().Assembly.GetName().Name;
+
+			services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataConnection"),
+				b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery).MigrationsAssembly(migrationsAssembly)),
+				ServiceLifetime.Transient);
 
 			services.AddTransient<IApplicationLogger, ApplicationLogger>();
 			services.AddTransient<IDataRepository, DataRepository>();
@@ -41,6 +46,7 @@ namespace OpeniT.PowerbiDashboardApp
 
 			services.AddScoped<IAccessProfileHelper, AccessProfileHelper>();
 			services.AddScoped<IFeatureAccessHelper, FeatureAccessHelper>();
+			services.AddSingleton<AzureStaticStore>();
 
 			services.AddTransient<ISeedContext, SeedContext>();
 			services.AddTransient<ISiteInitHelper, SiteInitHelper>();

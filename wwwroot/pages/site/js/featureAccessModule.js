@@ -102,7 +102,7 @@
 				placeholder: "Search from AD",
 				ajax: {
 					delay: 500,
-					url: '../api/admin/azureaccess/groups',
+					url: '../api/dashboard/azureaccess/groups',
 					dataType: 'json',
 					beforeSend: function (xhr) {
 						// Anti Forgery Validation Token

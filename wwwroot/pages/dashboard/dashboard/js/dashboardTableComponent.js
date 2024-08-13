@@ -11,7 +11,7 @@
 		}
 	});
 
-	function dashboardTableController($q, powerbiAPI, stateUtil, Notification) {
+	function dashboardTableController($q, powerbiAPI, stateUtil, Notification, requestVerificationToken) {
 
 		var ctrl = this;
 		ctrl.isBusy = false;
@@ -23,8 +23,14 @@
 		ctrl.editModel = {};
 		ctrl.editModelRef = {};
 		ctrl.deleteModelTarget = {};
+		ctrl.shareModelTarget = {};
+		ctrl.shareToUsers = [];
+		ctrl.shareToGroups = [];
+
+		ctrl.invalidShare = false;
 		
 		ctrl.$onInit = function () {
+
 			ctrl.componentContext.setState("loading");
 
 			$q.all([ctrl.getPowerbiReferences()])
@@ -71,6 +77,22 @@
 
 		ctrl.deleteInit = function (powerbiReference) {
 			ctrl.deleteModelTarget = angular.copy(powerbiReference);
+		}
+
+		ctrl.shareInit = function (powerbiReference) {
+			ctrl.shareToUsers = [];
+
+			ctrl.initUserSelect();
+
+			ctrl.shareModelTarget = angular.copy(powerbiReference);
+		}
+
+		ctrl.shareGroupInit = function (powerbiReference) {
+			ctrl.shareToGroups = [];
+
+			ctrl.initGroupSelect();
+
+			ctrl.shareModelTarget = angular.copy(powerbiReference);
 		}
 
 		ctrl.save = function () {
@@ -164,6 +186,223 @@
 			return angular.equals(ref, model);
 		}
 
+		ctrl.shareUsers = function (reference, users) {
+			ctrl.isBusy = true;
+
+			powerbiAPI
+				.userShare(reference.id, users)
+				.callbacks(
+					//Success Callback
+					function (successData) {
+						var powerbiReference = ctrl.powerbiReferences.find(x => x.id == reference.id);
+						if (powerbiReference) {
+							powerbiReference.sharing = angular.copy(successData.sharing);
+						}
+
+						ctrl.shareModelTarget.sharing = angular.copy(successData.sharing);
+
+						$("#user-select").val([]).trigger('change');
+
+						Notification.success("Successfully shared dashboard");
+					},
+					//Error Callback
+					function (errorResult) {
+						Notification.error(errorResult);
+					},
+					//Finally Callback
+					function () {
+						ctrl.isBusy = false;
+					}
+				);
+		}
+
+		ctrl.removeUserShare = function (reference, user) {
+			ctrl.isBusy = true;
+
+			var users = [user];
+
+			powerbiAPI
+				.removeUserShare(reference.id, users)
+				.callbacks(
+					//Success Callback
+					function (successData) {
+						var powerbiReference = ctrl.powerbiReferences.find(x => x.id == successData.id);
+						if (powerbiReference) {
+							powerbiReference.sharing = angular.copy(successData.sharing);
+						}
+
+						ctrl.shareModelTarget.sharing = angular.copy(successData.sharing);
+
+						Notification.success("Successfully removed sharing");
+					},
+					//Error Callback
+					function (errorResult) {
+						Notification.error(errorResult);
+					},
+					//Finally Callback
+					function () {
+						ctrl.isBusy = false;
+					}
+				);
+		}
+
+		ctrl.groupShare = function (reference, groups) {
+			ctrl.isBusy = true;
+
+			powerbiAPI
+				.groupShare(reference.id, groups)
+				.callbacks(
+					//Success Callback
+					function (successData) {
+						var powerbiReference = ctrl.powerbiReferences.find(x => x.id == reference.id);
+						if (powerbiReference) {
+							powerbiReference.sharing = angular.copy(successData.sharing);
+						}
+
+						ctrl.shareModelTarget.sharing = angular.copy(successData.sharing);
+
+						$("#group-select").val([]).trigger('change');
+
+						Notification.success("Successfully shared dashboard");
+					},
+					//Error Callback
+					function (errorResult) {
+						Notification.error(errorResult);
+					},
+					//Finally Callback
+					function () {
+						ctrl.isBusy = false;
+					}
+				);
+		}
+
+		ctrl.removeGroupShare = function (reference, group) {
+			ctrl.isBusy = true;
+
+			var groups = [group];
+
+			powerbiAPI
+				.removeGroupShare(reference.id, groups)
+				.callbacks(
+					//Success Callback
+					function (successData) {
+						var powerbiReference = ctrl.powerbiReferences.find(x => x.id == successData.id);
+						if (powerbiReference) {
+							powerbiReference.sharing = angular.copy(successData.sharing);
+						}
+
+						ctrl.shareModelTarget.sharing = angular.copy(successData.sharing);
+
+						Notification.success("Successfully removed sharing");
+					},
+					//Error Callback
+					function (errorResult) {
+						Notification.error(errorResult);
+					},
+					//Finally Callback
+					function () {
+						ctrl.isBusy = false;
+					}
+				);
+		}
+
+		ctrl.initUserSelect = function () {
+			angular.element("#user-select").select2({
+				allowClear: true,
+				minimumInputLength: 3,
+				placeholder: "Search from AD",
+				multiple: true,
+				ajax: {
+					delay: 500,
+					url: '../api/dashboard/azureaccess',
+					dataType: 'json',
+					beforeSend: function (xhr) {
+						// Anti Forgery Validation Token
+						xhr.setRequestHeader('RequestVerificationToken', requestVerificationToken);
+					},
+					data: function (params) {
+						// Query parameters will be ?query=[term]
+						var query = {
+							search: params.term
+						}
+						return query;
+					},
+					processResults: function (data) {
+						var data_ = data.map(function (datum) {
+							return {
+								"id": datum.id,
+								"text": "[" + datum.mail + "] " + datum.displayName,
+								"user": datum
+							};
+						});
+						return {
+							results: data_
+						};
+					}
+				}
+			}).on('change', function (e) {
+				var data = angular.element("#user-select").select2("data");
+
+				ctrl.shareToUsers = [];
+				data.forEach(function (item) {
+					var obj = {
+						azureId: item.id,
+						displayName: item.user.displayName,
+						email: item.user.mail
+					}
+
+					ctrl.shareToUsers.push(obj);
+				});
+			});
+		}
+
+		ctrl.initGroupSelect = function () {
+			angular.element("#group-select").select2({
+				allowClear: true,
+				minimumInputLength: 3,
+				placeholder: "Search from AD",
+				multiple: true,
+				ajax: {
+					delay: 500,
+					url: '../api/dashboard/azureaccess/groups',
+					dataType: 'json',
+					beforeSend: function (xhr) {
+						// Anti Forgery Validation Token
+						xhr.setRequestHeader('RequestVerificationToken', requestVerificationToken);
+					},
+					data: function (params) {
+						// Query parameters will be ?query=[term]
+						var query = {
+							search: params.term
+						}
+						return query;
+					},
+					processResults: function (data) {
+						var data_ = data.map(function (datum) {
+							return {
+								"id": datum.id,
+								"text": datum.mail
+							};
+						});
+						return {
+							results: data_
+						};
+					}
+				}
+			}).on('change', function (e) {
+				var data = angular.element("#group-select").select2("data");
+
+				ctrl.shareToGroups = [];
+				data.forEach(function (item) {
+					var obj = {
+						azureId: item.id,
+						email: item.text
+					}
+
+					ctrl.shareToGroups.push(obj);
+				});
+			});
+		}
 	}
 
 })();

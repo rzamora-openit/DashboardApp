@@ -27,8 +27,10 @@ namespace OpeniT.PowerbiDashboardApp.Data.Interfaces
         Task<ApplicationUser> GetInternalUserByReferenceId(string referenceId);
         Task<PowerbiReference> GetPowerbiReferenceByGroupIdDatasetId(string groupId, string datasetId);
         Task<PowerbiReference> GetPowerbiReferenceByGroupIdReportId(string groupId, string reportId);
-        Task<PowerbiReference> GetPowerbiReferenceById(int id);
-        Task<IEnumerable<PowerbiReference>> GetPowerbiReferences();
+		Task<PowerbiReference> GetPowerbiReferenceById(int id);
+		Task<PowerbiReference> GetPowerbiReferenceSharingById(int id, string azureId, List<string> groupIds);
+		Task<IEnumerable<PowerbiReference>> GetPowerbiReferences();
+        Task<IEnumerable<PowerbiReference>> GetPowerbiReferencesSharing(string azureId, List<string> groupIds);
         Task<IdentityResult> RemoveFromRoles(ApplicationUser user, IEnumerable<string> roles);
         void RemovePowerbiReference(PowerbiReference powerbiReference);
         Task<bool> SaveChangesAsync();

@@ -7,5 +7,6 @@
 		public string WorkGroupId { get; set; }
 		public string DataSetId { get; set; }
 		public string ReportId { get; set; }
-	}
+        public Sharing Sharing { get; set; }
+    }
 }

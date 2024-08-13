@@ -33,8 +33,24 @@
 				<td>{{reference.reportId}}</td>
 				<td class="text-right">
 					<a href="dashboard#!/{{reference.id}}/view" class="btn btn-sm btn-primary" title="View Dashboard" ng-click=""><i class="fa fa-eye"></i></a>
-					<button type="button" class="btn btn-sm btn-primary" title="Refresh" data-toggle="modal" data-target="#editModal" ng-click="ctrl.editInit(reference)"><i class="fa fa-edit"></i></button>
-					<button type="button" class="btn btn-sm btn-danger" title="Refresh" data-toggle="modal" data-target="#deleteModal" ng-click="ctrl.deleteInit(reference)"><i class="fa fa-trash"></i></button>
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-primary dropdown-toggle" title="Share" data-toggle="dropdown" aria-expanded="false">
+							<i class="fa fa-share"></i>
+						</button>
+						<div class="dropdown-menu">
+							<button type="button" class="dropdown-item" title="User Share" data-toggle="modal" data-target="#shareModal" ng-click="ctrl.shareInit(reference)">User Share</button>
+							<button type="button" class="dropdown-item" title="Group Share" data-toggle="modal" data-target="#groupShareModal" ng-click="ctrl.shareGroupInit(reference)">Group Share</button>
+						</div>
+					</div>
+					<div class="btn-group">
+						<button type="button" class="btn btn-sm btn-primary dropdown-toggle" title="More Action" data-toggle="dropdown" aria-expanded="false">
+							<i class="fa fa-ellipsis-v"></i>
+						</button>
+						<div class="dropdown-menu">
+							<button type="button" class="dropdown-item" title="Edit" data-toggle="modal" data-target="#editModal" ng-click="ctrl.editInit(reference)">Edit</button>
+							<button type="button" class="dropdown-item" title="Delete" data-toggle="modal" data-target="#deleteModal" ng-click="ctrl.deleteInit(reference)">Delete</button>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</tbody>
@@ -80,7 +96,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-danger" ng-click="ctrl.save()" ng-disabled="ctrl.isBusy || !ctrl.addModel.name || !ctrl.addModel.workGroupId || !ctrl.addModel.dataSetId || !ctrl.addModel.reportId">Add</button>
+					<button type="button" class="btn btn-danger" ng-click="ctrl.save()" ng-disabled="ctrl.isBusy || !ctrl.addModel.name || !ctrl.addModel.workGroupId || !ctrl.addModel.dataSetId || !ctrl.addModel.reportId">Save</button>
 				</div>
 			</div>
 		</div>
@@ -126,7 +142,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-danger" ng-click="ctrl.update()" ng-disabled="ctrl.isBusy || !ctrl.editModel.name || !ctrl.editModel.workGroupId || !ctrl.editModel.dataSetId || !ctrl.editModel.reportId || ctrl.notChanged(ctrl.editModelRef, ctrl.editModel)">Add</button>
+					<button type="button" class="btn btn-danger" ng-click="ctrl.update()" ng-disabled="ctrl.isBusy || !ctrl.editModel.name || !ctrl.editModel.workGroupId || !ctrl.editModel.dataSetId || !ctrl.editModel.reportId || ctrl.notChanged(ctrl.editModelRef, ctrl.editModel)">Save</button>
 				</div>
 			</div>
 		</div>
@@ -148,6 +164,86 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 					<button type="button" class="btn btn-danger" ng-click="ctrl.delete()" ng-disabled="ctrl.isBusy">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--user share Modal -->
+	<div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="shareModalLabel">Share</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Shared To <span style="color:red"></span>:</label>
+						<div class="col-9">
+							<div ng-repeat="user in ctrl.shareModelTarget.sharing.userShares | orderBy: 'displayName' track by $index"
+								 style="margin: 0 2px 2px 0; padding:2px 4px 2px 4px; border: 1px solid rgb(168,168,168);border-radius:9px;display:inline-block;background-color: rgb(240, 240, 240)">
+								{{ user.displayName }}
+								<i title="Remove" class="btn btn-sm fa fa-minus-circle" style="color: rgb(217,83,79); padding:0;" ng-click="ctrl.removeUserShare(ctrl.shareModelTarget, user)"></i>
+							</div>
+						</div>
+					</div>
+
+					<form>
+						<div class="form-group attn row">
+							<label class="control-label col-3 text-right">User :</label>
+							<div class="col-9">
+								<select id="user-select" class="form-control form-control-sm" style="width: 100%;">
+								</select>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-danger" ng-click="ctrl.shareUsers(ctrl.shareModelTarget, ctrl.shareToUsers)" ng-disabled="ctrl.isBusy">Share</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--group share Modal -->
+	<div class="modal fade" id="groupShareModal" tabindex="-1" role="dialog" aria-labelledby="groupShareLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="groupShareLabel">Group Share</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Shared To <span style="color:red"></span>:</label>
+						<div class="col-9">
+							<div ng-repeat="group in ctrl.shareModelTarget.sharing.groupShares | orderBy track by $index"
+								 style="margin: 0 2px 2px 0; padding:2px 4px 2px 4px; border: 1px solid rgb(168,168,168);border-radius:9px;display:inline-block;background-color: rgb(240, 240, 240)">
+								{{ group.email }}
+								<i title="Remove" class="btn btn-sm fa fa-minus-circle" style="color: rgb(217,83,79); padding:0;" ng-click="ctrl.removeGroupShare(ctrl.shareModelTarget, group)"></i>
+							</div>
+						</div>
+					</div>
+
+					<form>
+						<div class="form-group attn row">
+							<label class="control-label col-3 text-right">Group :</label>
+							<div class="col-9">
+								<select id="group-select" class="form-control form-control-sm" style="width: 100%;">
+								</select>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-danger" ng-click="ctrl.groupShare(ctrl.shareModelTarget, ctrl.shareToGroups)" ng-disabled="ctrl.isBusy">Share</button>
 				</div>
 			</div>
 		</div>

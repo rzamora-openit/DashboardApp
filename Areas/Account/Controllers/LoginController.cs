@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers;
 using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
@@ -22,16 +23,19 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly IApplicationLogger logger;
 		private readonly IDataRepository dataRepository;
+		private readonly IAccessProfileHelper accessProfileHelper;
 
 		public LoginController(SignInManager<ApplicationUser> signInManager,
 			UserManager<ApplicationUser> userManager,
 			IApplicationLogger logger,
-			IDataRepository dataRepository)
+			IDataRepository dataRepository,
+			IAccessProfileHelper accessProfileHelper)
 		{
 			this.signInManager = signInManager;
 			this.userManager = userManager;
 			this.logger = logger;
 			this.dataRepository = dataRepository;
+			this.accessProfileHelper = accessProfileHelper;
 		}
 
 		[Route("[controller]")]
@@ -125,6 +129,8 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 				{
 					await this.dataRepository.SetToRole(email, Site.ConstantValues.InternalUser);
 				}
+
+				await accessProfileHelper.FetchAndStoreInfo(applicationUser.InternalAccount, true);
 
 				return LocalRedirect(returnUrl);
 			}

@@ -222,12 +222,36 @@ namespace OpeniT.PowerbiDashboardApp.Data
 		#region PowerbiReferences
 		public async Task<IEnumerable<PowerbiReference>> GetPowerbiReferences()
 		{
-			return await this.context.PowerbiReferences.ToListAsync();
+			return await this.context.PowerbiReferences
+				.Include(x => x.Sharing.UserShares)
+				.Include(x => x.Sharing.GroupShares)
+				.ToListAsync();
+		}
+
+		public async Task<IEnumerable<PowerbiReference>> GetPowerbiReferencesSharing(string azureId, List<string> groupIds)
+		{
+			return await this.context.PowerbiReferences
+				.Include(x => x.Sharing.UserShares)
+				.Include(x => x.Sharing.GroupShares)
+				.Where(x => x.Sharing.UserShares.Any(s => s.AzureId == azureId) || x.Sharing.GroupShares.Any(s => groupIds.Contains(s.AzureId)))
+				.ToListAsync();
 		}
 
 		public async Task<PowerbiReference> GetPowerbiReferenceById(int id)
 		{
-			return await this.context.PowerbiReferences.FirstOrDefaultAsync(x => x.Id == id);
+			return await this.context.PowerbiReferences
+				.Include(x => x.Sharing.UserShares)
+				.Include(x => x.Sharing.GroupShares)
+				.FirstOrDefaultAsync(x => x.Id == id);
+		}
+
+		public async Task<PowerbiReference> GetPowerbiReferenceSharingById(int id, string azureId, List<string> groupIds)
+		{
+			return await this.context.PowerbiReferences
+				.Include(x => x.Sharing.UserShares)
+				.Include(x => x.Sharing.GroupShares)
+				.Where(x => x.Sharing.UserShares.Any(s => s.AzureId == azureId) || x.Sharing.GroupShares.Any(s => groupIds.Contains(s.AzureId)))
+				.FirstOrDefaultAsync(x => x.Id == id);
 		}
 
 		public async Task<PowerbiReference> GetPowerbiReferenceByGroupIdDatasetId(string groupId, string datasetId)

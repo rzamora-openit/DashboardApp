@@ -48,6 +48,38 @@
 			return httpControl.delete(serviceName, url, payload);
 		}
 
+		service.userShare = function (id, model) {
+			var serviceName = "service.powerbiAPI.share";
+			var url = "/api/dashboard/powerbiReference/share/" + id;
+			var payload = model;
+
+			return httpControl.put(serviceName, url, payload);
+		}
+
+		service.removeUserShare = function (id, model) {
+			var serviceName = "service.powerbiAPI.removeUserShare";
+			var url = "/api/dashboard/powerbiReference/remove-share/" + id;
+			var payload = model;
+
+			return httpControl.put(serviceName, url, payload);
+		}
+
+		service.groupShare = function (id, model) {
+			var serviceName = "service.powerbiAPI.groupShare";
+			var url = "/api/dashboard/powerbiReference/group/share/" + id;
+			var payload = model;
+
+			return httpControl.put(serviceName, url, payload);
+		}
+
+		service.removeGroupShare = function (id, model) {
+			var serviceName = "service.powerbiAPI.removeGroupShare";
+			var url = "/api/dashboard/powerbiReference/group/remove-share/" + id;
+			var payload = model;
+
+			return httpControl.put(serviceName, url, payload);
+		}
+
 		return service;
 	});
 

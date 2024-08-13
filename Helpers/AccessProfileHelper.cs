@@ -150,5 +150,26 @@ namespace OpeniT.PowerbiDashboardApp.Helpers
 			var user = await dataRepository.GetInternalApplicationUserByEmail(email);
 			return await this.HasPermission(user, featureName);
 		}
+
+		public async Task<bool> HasPermission(ApplicationUser user, string featureName, Security.AccessLevelFlag flag)
+		{
+			var profile = new AccessProfile()
+			{
+				Id = user?.InternalAccount?.ReferenceId,
+				Email = user?.Email,
+				IsMaster = await userManager.IsInRoleAsync(user, Site.ConstantValues.ItoolsMaster)
+			};
+
+			var hasAccess = AccessEvaluator
+				.AssertAccessLevel(FeatureAccessHelper
+					.GetFeatureAccess(featureName), profile) > flag;
+			return hasAccess;
+		}
+
+		public async Task<bool> HasPermission(string email, string featureName, Security.AccessLevelFlag flag)
+		{
+			var user = await dataRepository.GetInternalApplicationUserByEmail(email);
+			return await this.HasPermission(user, featureName, flag);
+		}
 	}
 }
