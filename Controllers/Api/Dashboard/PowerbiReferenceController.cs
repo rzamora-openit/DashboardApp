@@ -144,7 +144,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -190,7 +190,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -248,7 +248,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -302,7 +302,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -321,18 +321,15 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 					return this.BadRequest(log);
 				}
 
-				if (powerbiReference.Sharing?.UserShares == null)
-				{
+				if (powerbiReference.Sharing == null) {
 					powerbiReference.Sharing = new Sharing()
 					{
 						UserShares = shareTos
 					};
 				}
-				else
-				{
+				else {
 					var alreadyExists = powerbiReference.Sharing.UserShares.Any(u => shareTos.Any(s => s.Email == u.Email));
-					if (alreadyExists)
-					{
+					if (alreadyExists) {
 						var log = await logger.LogFailure(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', shareTos.Select(s => s.Email))}. An email is already added.");
 						return this.BadRequest("An email is already added");
 					}
@@ -374,7 +371,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -393,7 +390,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 					return this.BadRequest(log);
 				}
 
-				if (powerbiReference.Sharing?.UserShares == null)
+				if (powerbiReference.Sharing == null)
 				{
 					var log = await logger.LogFailure(activity: activity, relevantObject: nameof(Sharing), reference: $"{powerbiId}", log: $"Not found");
 					return this.BadRequest(log);
@@ -406,11 +403,11 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var result = await this.dataRepository.SaveChangesAsync();
 				if (!result)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', userShares.Select(s => s.Email))}");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Remove sharing failed to {string.Join(',', userShares.Select(s => s.Email))}");
 					return this.BadRequest(log);
 				}
 
-				await logger.LogDataAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share success to {string.Join(',', userShares.Select(s => s.Email))}");
+				await logger.LogDataAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Remove sharing success to {string.Join(',', userShares.Select(s => s.Email))}");
 				return this.Ok(powerbiReference);
 			}
 			catch (Exception ex)
@@ -435,7 +432,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -454,7 +451,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 					return this.BadRequest(log);
 				}
 
-				if (powerbiReference.Sharing?.GroupShares == null)
+				if (powerbiReference.Sharing == null)
 				{
 					powerbiReference.Sharing = new Sharing()
 					{
@@ -507,7 +504,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
 				if (!hasPermission)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), log: $"Insufficient access");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(FeatureNames.Dashboard), reference: $"{owner}", log: $"Insufficient access");
 					return this.BadRequest("Insufficient access");
 				}
 
@@ -526,7 +523,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 					return this.BadRequest(log);
 				}
 
-				if (powerbiReference.Sharing?.GroupShares == null)
+				if (powerbiReference.Sharing == null)
 				{
 					var log = await logger.LogFailure(activity: activity, relevantObject: nameof(Sharing), reference: $"{powerbiId}", log: $"Not found");
 					return this.BadRequest(log);
@@ -539,11 +536,11 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				var result = await this.dataRepository.SaveChangesAsync();
 				if (!result)
 				{
-					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', groupShares.Select(s => s.Email))}");
+					var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Remove sharing failed to {string.Join(',', groupShares.Select(s => s.Email))}");
 					return this.BadRequest(log);
 				}
 
-				await logger.LogDataAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share success to {string.Join(',', groupShares.Select(s => s.Email))}");
+				await logger.LogDataAccess(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Remove sharing success to {string.Join(',', groupShares.Select(s => s.Email))}");
 				return this.Ok(powerbiReference);
 			}
 			catch (Exception ex)

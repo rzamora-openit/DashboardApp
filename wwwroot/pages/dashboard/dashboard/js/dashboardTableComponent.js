@@ -79,7 +79,7 @@
 			ctrl.deleteModelTarget = angular.copy(powerbiReference);
 		}
 
-		ctrl.shareInit = function (powerbiReference) {
+		ctrl.shareUserInit = function (powerbiReference) {
 			ctrl.shareToUsers = [];
 
 			ctrl.initUserSelect();
