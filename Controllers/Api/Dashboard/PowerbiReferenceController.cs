@@ -1,14 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpeniT.PowerbiDashboardApp.Data;
 using OpeniT.PowerbiDashboardApp.Data.Interfaces;
-using OpeniT.PowerbiDashboardApp.Helpers;
 using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using OpeniT.PowerbiDashboardApp.Models.Objects;
-using OpeniT.PowerbiDashboardApp.Security.Model;
-using OpeniT.PowerbiDashboardApp.ViewModels.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +44,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 			try
 			{
 				IEnumerable<PowerbiReference> references = new List<PowerbiReference>();
-				
+
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Admin);
 				if (hasPermission)
 				{
@@ -101,7 +97,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				else
 				{
 					var internalUser = await this.dataRepository.GetInternalAccountByEmail(owner);
-					if (internalUser == null) 
+					if (internalUser == null)
 					{
 						var log = await logger.LogInvalidAccess(activity: activity, relevantObject: nameof(InternalAccount), reference: $"{owner}", log: $"Not found");
 						return this.BadRequest(log);
@@ -237,7 +233,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> Delete(int id) 
+		public async Task<IActionResult> Delete(int id)
 		{
 			var activity = new ApplicationActivity() { Controller = ControllerName, Action = $"Delete/{id}" };
 
@@ -321,15 +317,18 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 					return this.BadRequest(log);
 				}
 
-				if (powerbiReference.Sharing == null) {
+				if (powerbiReference.Sharing == null)
+				{
 					powerbiReference.Sharing = new Sharing()
 					{
 						UserShares = shareTos
 					};
 				}
-				else {
+				else
+				{
 					var alreadyExists = powerbiReference.Sharing.UserShares.Any(u => shareTos.Any(s => s.Email == u.Email));
-					if (alreadyExists) {
+					if (alreadyExists)
+					{
 						var log = await logger.LogFailure(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', shareTos.Select(s => s.Email))}. An email is already added.");
 						return this.BadRequest("An email is already added");
 					}
