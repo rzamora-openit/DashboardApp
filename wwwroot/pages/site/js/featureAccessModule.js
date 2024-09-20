@@ -89,8 +89,11 @@
 					if (data && data.length) {
 						ctrl.addShareUserModel.reference = data[0].user.displayName;
 						ctrl.addShareUserModel.azureId = this.value;
-						$scope.$apply();
+					} else {
+						ctrl.addShareUserModel.reference = '';
+						ctrl.addShareUserModel.azureId = '';
 					}
+					$scope.$apply();
 				}
 			});
 		}
@@ -133,8 +136,11 @@
 					if (data && data.length) {
 						ctrl.addShareGroupModel.reference = data[0].text;
 						ctrl.addShareGroupModel.azureId = this.value;
-						$scope.$apply();
+					} else {
+						ctrl.addShareGroupModel.reference = '';
+						ctrl.addShareGroupModel.azureId = '';
 					}
+					$scope.$apply();
 				}
 			});
 		}
@@ -163,13 +169,14 @@
 				.addAccess($scope.featureAccess.id, accessModel)
 				.callbacks(
 					//Success Callback
-					function (successData) {						
-						$scope.featureAccess.accesses = successData.accesses;
+					function (successData) {
+						console.log(successData);
+						$scope.featureAccess.accesses = successData.featureAccess.accesses;
 						angular.element('#shareRoleModal').modal('hide');
 						angular.element('#shareUserModal').modal('hide');
 						angular.element('#shareGroupModal').modal('hide');
 
-						Notification.success("Access Priviledge Added");
+						Notification.success("Access Priviledge " + successData.action);
 					},
 					//Error Callback
 					function (errorResult) {

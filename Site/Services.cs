@@ -47,7 +47,7 @@ namespace OpeniT.PowerbiDashboardApp.Site
 
 		public static readonly IEnumerable<string> ExemptServiceFeatureList = new List<string>()
 		{
-
+			FeatureNames.Dashboard
 		};
 
 		public static readonly IEnumerable<string> ServiceFeatureList = new List<string>()

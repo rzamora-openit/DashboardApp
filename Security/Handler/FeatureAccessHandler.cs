@@ -3,6 +3,7 @@ using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 using OpeniT.PowerbiDashboardApp.Helpers;
 using OpeniT.PowerbiDashboardApp.Security.Model;
 using OpeniT.PowerbiDashboardApp.Security.Requirements;
+using OpeniT.PowerbiDashboardApp.Site;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -45,9 +46,16 @@ namespace OpeniT.PowerbiDashboardApp.Security.Handler
 					IsMaster = roles.Contains(Site.ConstantValues.ItoolsMaster)
 				};
 
+				if (Services.ExemptServiceFeatureList.Any(f => f == requirement.feature))
+				{
+					context.Succeed(requirement);
+					return Task.CompletedTask;
+				}
+
 				if (AccessEvaluator.AssertAccessLevel(FeatureAccessHelper.GetFeatureAccess(requirement.feature), accessProfile) > Security.AccessLevelFlag.None)
 				{
 					context.Succeed(requirement);
+					return Task.CompletedTask;
 				}
 			}
 

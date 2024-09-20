@@ -72,7 +72,7 @@
 		</tr>
 		<tr ng-repeat="access in (featureAccess.accesses | filterBy: ['type']: 'User')">
 			<td class="">
-				<img class="ra-nav-img rounded-circle" ng-src="/api/admin/azureaccess/ref/{{access.azureId}}/photo" onerror="this.onerror=null; this.src='/images/ImgPlaceholder.png'" alt="" style="width:30px; height:30px;"> 
+				<img class="ra-nav-img rounded-circle" ng-src="/api/dashboard/azureaccess/ref/{{access.azureId}}/photo" onerror="this.onerror=null; this.src='/images/ImgPlaceholder.png'" alt="" style="width:30px; height:30px;"> 
 				<span class="ml-1">{{access.reference}}</span>
 			</td>
 			<td class="">{{getAccessLevelByFlag(access.level)}}</td>
@@ -155,7 +155,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="">Cancel</button>
-				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareGroupModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareGroupModel.azureId || ctrl.addShareGroupModel.level==null">Add/Update</button>
+				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareGroupModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareGroupModel.azureId || ctrl.addShareGroupModel.level == null">Add/Update</button>
 			</div>
 		</div>
 	</div>
@@ -194,7 +194,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="">Cancel</button>
-				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareUserModel)" ng-disabled="ctrl.isBusy|| !ctrl.addShareUserModel.azureId || ctrl.addShareUserModel.level==null">Add/Update</button>
+				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareUserModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareUserModel.azureId || ctrl.addShareUserModel.level == null">Add/Update</button>
 			</div>
 		</div>
 	</div>

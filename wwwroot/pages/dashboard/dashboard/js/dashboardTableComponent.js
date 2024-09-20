@@ -187,6 +187,11 @@
 		}
 
 		ctrl.shareUsers = function (reference, users) {
+			if (!users.length) {
+				Notification.error("Invalid action");
+				return;
+			}
+
 			ctrl.isBusy = true;
 
 			powerbiAPI
@@ -247,6 +252,11 @@
 		}
 
 		ctrl.groupShare = function (reference, groups) {
+			if (!groups.length) {
+				Notification.error("Invalid action");
+				return;
+			}
+
 			ctrl.isBusy = true;
 
 			powerbiAPI

@@ -188,6 +188,7 @@
 								{{ user.displayName }}
 								<i title="Remove" class="btn btn-sm fa fa-minus-circle" style="color: rgb(217,83,79); padding:0;" ng-click="ctrl.removeUserShare(ctrl.shareModelTarget, user)"></i>
 							</div>
+							<i ng-if="!ctrl.shareModelTarget.sharing.userShares.length">Not shared to any user, yet.</i>
 						</div>
 					</div>
 
@@ -228,6 +229,7 @@
 								{{ group.email }}
 								<i title="Remove" class="btn btn-sm fa fa-minus-circle" style="color: rgb(217,83,79); padding:0;" ng-click="ctrl.removeGroupShare(ctrl.shareModelTarget, group)"></i>
 							</div>
+							<i ng-if="!ctrl.shareModelTarget.sharing.groupShares.length">Not shared to any group, yet.</i>
 						</div>
 					</div>
 

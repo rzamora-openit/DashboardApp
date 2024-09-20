@@ -86,6 +86,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 			try
 			{
 				var owner = this.User.Identity.Name;
+				var action = "";
 
 				var featureAccess = await this.dataRepository.GetFeatureAccessById(id);
 				if (featureAccess == null)
@@ -133,6 +134,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 
 					await logger.LogDataAccess(activity: activity, relevantObject: nameof(Access), reference: $"{access.Id}", log: $"Update Access Success");
 					await featureAccessHelper.AddFeatureAccess(featureAccess.FeatureName, access);
+					action = "Updated";
 				}
 				else
 				{
@@ -152,9 +154,10 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 
 					await logger.LogDataAccess(activity: activity, relevantObject: nameof(Access), reference: $"{access.Id}", log: $"Add Access Success");
 					await featureAccessHelper.AddFeatureAccess(featureAccess.FeatureName, access);
+					action = "Added";
 				}
 
-				return this.Ok(featureAccess);
+				return this.Ok(new { featureAccess, action });
 			}
 			catch (Exception ex)
 			{

@@ -326,11 +326,11 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				}
 				else
 				{
-					var alreadyExists = powerbiReference.Sharing.UserShares.Any(u => shareTos.Any(s => s.Email == u.Email));
-					if (alreadyExists)
+					var alreadyExists = powerbiReference.Sharing.UserShares.Where(u => shareTos.Any(s => s.Email == u.Email));
+					if (alreadyExists.Any())
 					{
 						var log = await logger.LogFailure(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', shareTos.Select(s => s.Email))}. An email is already added.");
-						return this.BadRequest("An email is already added");
+						return this.BadRequest($"{string.Join(", ", alreadyExists.Select(u => u.Email))} has already been given access to the dashboard");
 					}
 
 					powerbiReference.Sharing.UserShares = powerbiReference.Sharing.UserShares.Concat(shareTos).ToList();
@@ -459,11 +459,11 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 				}
 				else
 				{
-					var alreadyExists = powerbiReference.Sharing.GroupShares.Any(u => shareTos.Any(s => s.Email == u.Email));
-					if (alreadyExists)
+					var alreadyExists = powerbiReference.Sharing.GroupShares.Where(u => shareTos.Any(s => s.Email == u.Email));
+					if (alreadyExists.Any())
 					{
 						var log = await logger.LogFailure(activity: activity, relevantObject: nameof(PowerbiReference), reference: $"{powerbiReference.Id}", log: $"Share failed to {string.Join(',', shareTos.Select(s => s.Email))}. An email is already added.");
-						return this.BadRequest("An email is already added");
+						return this.BadRequest($"{string.Join(", ", alreadyExists.Select(u => u.Email))} has already been given access to the dashboard");
 					}
 
 					powerbiReference.Sharing.GroupShares = powerbiReference.Sharing.GroupShares.Concat(shareTos).ToList();
