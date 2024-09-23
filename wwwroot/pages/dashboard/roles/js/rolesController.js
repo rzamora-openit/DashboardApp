@@ -5,7 +5,7 @@
 
 	angular.module("app-roles").controller("rolesController", rolesController);
 
-	function rolesController($scope, $routeParams, $window, stateUtil, rolesAPI, Notification, requestVerificationToken) {
+	function rolesController($scope, $routeParams, $window, $timeout, stateUtil, rolesAPI, Notification, requestVerificationToken) {
 
 		var ctrl = this;
 		ctrl.isBusy = false;
@@ -54,10 +54,11 @@
 					}							
 				}
 			}).on('change', function (e) {			
-				//var data = angular.element("#user-select").select2("data");
+				var data = angular.element("#user-select").select2("data");
 				if (ctrl.assignRoleModel) {
-					ctrl.assignRoleModel.userId = this.value;
-					$scope.$apply();
+					$timeout(function () {
+						ctrl.assignRoleModel.userId = data[0]?.id || '';
+					});
 				}				
 			});			
 		}
@@ -230,6 +231,7 @@
 		}
 
 		ctrl.assignRoleInit = function () {
+			angular.element("#user-select").val(null).trigger('change');
 			ctrl.assignRoleModel = {};
 		}
 
