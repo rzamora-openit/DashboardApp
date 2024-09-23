@@ -68,6 +68,7 @@ namespace OpeniT.PowerbiDashboardApp.Site
 		{
 			switch (feature)
 			{
+				case FeatureNames.GroupDashboard: return ServiceGroupDashboard;
 				case FeatureNames.GroupAdministration: return ServiceGroupAdministration;
 				default: return new ServiceGroupViewModel() { };
 			};
@@ -89,28 +90,12 @@ namespace OpeniT.PowerbiDashboardApp.Site
 		{
 			SortedList<string, ServiceGroupViewModel> serviceGroupViewModels = new SortedList<string, ServiceGroupViewModel>();
 
-			//Adds the Excempt Feature
-			foreach (var serviceName in Services.ExemptServiceFeatureList)
-			{
-				var parentServiceGroup = Services.FeatureToServiceGroupParentMap[serviceName];
-				//Ensure add the Service Group
-				if (!serviceGroupViewModels.ContainsKey(parentServiceGroup))
-				{
-					var serviceGroupViewModel = Services.GenerateServiceGroup(parentServiceGroup);
-					//Reset Services List
-					serviceGroupViewModel.Services = new List<ServiceViewModel>();
-					serviceGroupViewModels.Add(parentServiceGroup, serviceGroupViewModel);
-				}
-				//Add the service
-				var serviceModel = Services.GenerateService(serviceName);
-				serviceGroupViewModels[parentServiceGroup].Services.Add(serviceModel);
-			}
-
 			//Evaluate each service listed in meta information
 			foreach (var serviceName in Services.ServiceFeatureList)
 			{
 				if (Site.StaticValues.EnableGlobalInternalAccess ||
-					Security.AccessEvaluator.AssertAccessLevel(FeatureAccessHelper.GetFeatureAccess(serviceName), accessProfile) >= levelFlag)
+					Security.AccessEvaluator.AssertAccessLevel(FeatureAccessHelper.GetFeatureAccess(serviceName), accessProfile) >= levelFlag ||
+					Services.ExemptServiceFeatureList.Any(e => e == serviceName))
 				{
 					var parentServiceGroup = Services.FeatureToServiceGroupParentMap[serviceName];
 					//Ensure add the Service Group
