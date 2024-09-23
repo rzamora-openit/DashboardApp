@@ -11,7 +11,7 @@
 		}
 	});
 
-	function dashboardTableController($q, powerbiAPI, stateUtil, Notification, requestVerificationToken) {
+	function dashboardTableController($q, $timeout, powerbiAPI, stateUtil, Notification, requestVerificationToken) {
 
 		var ctrl = this;
 		ctrl.isBusy = false;
@@ -82,7 +82,12 @@
 		ctrl.shareUserInit = function (powerbiReference) {
 			ctrl.shareToUsers = [];
 
-			ctrl.initUserSelect();
+			var select2IsInitialized = angular.element("#user-select").hasClass('select2-hidden-accessible');
+			if (!select2IsInitialized) {
+				ctrl.initUserSelect();
+			}
+			
+			angular.element("#user-select").val([]).trigger('change');
 
 			ctrl.shareModelTarget = angular.copy(powerbiReference);
 		}
@@ -90,7 +95,12 @@
 		ctrl.shareGroupInit = function (powerbiReference) {
 			ctrl.shareToGroups = [];
 
-			ctrl.initGroupSelect();
+			var select2IsInitialized = angular.element("#group-select").hasClass('select2-hidden-accessible');
+			if (!select2IsInitialized) {
+				ctrl.initGroupSelect();
+			}
+
+			angular.element("#group-select").val([]).trigger('change');
 
 			ctrl.shareModelTarget = angular.copy(powerbiReference);
 		}
@@ -342,27 +352,35 @@
 							return {
 								"id": datum.id,
 								"text": "[" + datum.mail + "] " + datum.displayName,
+								"displayName": datum.displayName,
+								"email": datum.mail,
 								"user": datum
 							};
 						});
+
+						console.log(data_)
+
 						return {
 							results: data_
 						};
 					}
 				}
 			}).on('change', function (e) {
-				var data = angular.element("#user-select").select2("data");
+				var data = angular.element(e.target).select2("data");
+				$timeout(function () {
+					ctrl.shareToUsers = [];
 
-				ctrl.shareToUsers = [];
-				data.forEach(function (item) {
-					var obj = {
-						azureId: item.id,
-						displayName: item.user.displayName,
-						email: item.user.mail
-					}
+					data.forEach(function (item) {
 
-					ctrl.shareToUsers.push(obj);
-				});
+						var obj = {
+							azureId: item.id,
+							displayName: item.displayName,
+							email: item.email
+						}
+
+						ctrl.shareToUsers.push(obj);
+					});
+				})
 			});
 		}
 
@@ -401,16 +419,17 @@
 				}
 			}).on('change', function (e) {
 				var data = angular.element("#group-select").select2("data");
+				$timeout(function () {
+					ctrl.shareToGroups = [];
+					data.forEach(function (item) {
+						var obj = {
+							azureId: item.id,
+							email: item.text
+						}
 
-				ctrl.shareToGroups = [];
-				data.forEach(function (item) {
-					var obj = {
-						azureId: item.id,
-						email: item.text
-					}
-
-					ctrl.shareToGroups.push(obj);
-				});
+						ctrl.shareToGroups.push(obj);
+					});
+				})
 			});
 		}
 	}
