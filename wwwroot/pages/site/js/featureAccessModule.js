@@ -32,7 +32,7 @@
         };
 	});
 
-	function featureAccessController($scope, stateUtil, rolesAPI, featureAccessAPI, Notification, requestVerificationToken) {
+	function featureAccessController($scope, $timeout, stateUtil, rolesAPI, featureAccessAPI, Notification, requestVerificationToken) {
 
 		$scope.ctrl = this;
 		var ctrl = this;
@@ -85,15 +85,16 @@
 				}
 			}).on('change', function (e) {
 				if (ctrl.addShareUserModel) {
-					var data = angular.element("#user-select").select2("data");					
-					if (data && data.length) {
-						ctrl.addShareUserModel.reference = data[0].user.displayName;
-						ctrl.addShareUserModel.azureId = this.value;
-					} else {
-						ctrl.addShareUserModel.reference = '';
-						ctrl.addShareUserModel.azureId = '';
-					}
-					$scope.$apply();
+					$timeout(function () {
+						var data = angular.element("#user-select").select2("data");
+						if (data && data.length) {
+							ctrl.addShareUserModel.reference = data[0].user.displayName;
+							ctrl.addShareUserModel.azureId = data[0].id;
+						} else {
+							ctrl.addShareUserModel.reference = '';
+							ctrl.addShareUserModel.azureId = '';
+						}
+					});
 				}
 			});
 		}
@@ -132,15 +133,16 @@
 				}
 			}).on('change', function (e) {				
 				if (ctrl.addShareGroupModel) {
-					var data = angular.element("#group-select").select2("data");
-					if (data && data.length) {
-						ctrl.addShareGroupModel.reference = data[0].text;
-						ctrl.addShareGroupModel.azureId = this.value;
-					} else {
-						ctrl.addShareGroupModel.reference = '';
-						ctrl.addShareGroupModel.azureId = '';
-					}
-					$scope.$apply();
+					$timeout(function () {
+						var data = angular.element("#group-select").select2("data");
+						if (data && data.length) {
+							ctrl.addShareGroupModel.reference = data[0].text;
+							ctrl.addShareGroupModel.azureId = data[0].id;
+						} else {
+							ctrl.addShareGroupModel.reference = '';
+							ctrl.addShareGroupModel.azureId = '';
+						}
+					});
 				}
 			});
 		}
@@ -170,7 +172,6 @@
 				.callbacks(
 					//Success Callback
 					function (successData) {
-						console.log(successData);
 						$scope.featureAccess.accesses = successData.featureAccess.accesses;
 						angular.element('#shareRoleModal').modal('hide');
 						angular.element('#shareUserModal').modal('hide');

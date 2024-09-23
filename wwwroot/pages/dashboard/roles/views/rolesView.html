@@ -88,16 +88,16 @@
 				</tr>
 				<tr>
 					<th><input st-search="principalDisplayName" class="form-control form-control-sm" type="search" /></th>
-					<th><input st-search="roleName" class="form-control form-control-sm" type="search" /></th>
+					<th><input st-search="role.value" class="form-control form-control-sm" type="search" /></th>
 					<th class="text-right">
 						<button type="button" class="btn btn-success btn-sm m-1" ng-click="ctrl.assignRoleInit()" ng-disabled="ctrl.isBusy" title="Assign Role" data-toggle="modal" data-target="#assignRoleModal"><i class="fa fa-plus"></i> Create Assignment</button>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr ng-repeat="roleAssignment in roleAssignments">
+				<tr ng-repeat="roleAssignment in roleAssignments" ng-init="roleAssignment.role.value = roleAssignment.role.value ? roleAssignment.role.value : 'Default Access'">
 					<td class="">{{roleAssignment.principalDisplayName}}</td>
-					<td class="">{{roleAssignment.role.value ? roleAssignment.role.value : 'Default Access'}}</td>
+					<td class="">{{roleAssignment.role.value}}</td>
 					<td class="text-right">
 						<button type="button" class="btn btn-danger btn-sm" ng-click="ctrl.removeAssignmentInit(roleAssignment)" ng-disabled="ctrl.isBusy" ng-if="roleAssignment.role" title="Unassign" data-toggle="modal" data-target="#unassignRoleModal"><i class="fa fa-ban"></i></button>
 					</td>
@@ -240,7 +240,7 @@
 					</div>
 
 					<div class="form-group attn row">
-						<label class="control-label col-3 text-right">Description <span style="color:red">*</span>:</label>
+						<label class="control-label col-3 text-right">Role <span style="color:red">*</span>:</label>
 						<div class="col-9">
 							<select id="role-select" class="form-control form-control-sm" ng-model="ctrl.assignRoleModel.roleId" style="width:100%">
 								<option ng-repeat="x in ctrl.roles | orderBy:'value'" ng-value="x.id">{{x.value}}</option>
