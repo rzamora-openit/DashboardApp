@@ -358,8 +358,6 @@
 							};
 						});
 
-						console.log(data_)
-
 						return {
 							results: data_
 						};
