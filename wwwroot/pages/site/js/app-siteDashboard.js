@@ -225,4 +225,18 @@
 
 		return service;
 	});
+
+	siteApp.factory("profileAPI", function (httpControl) {
+		var service = {};
+
+		service.getWritePermission = function () {
+			var serviceName = "service.profileAPI.getWritePermission";
+			var url = "/api/dashboard/profile/write-permission/";
+			var payload = {};
+
+			return httpControl.get(serviceName, url, payload);
+		};
+
+		return service;
+	});
 })();

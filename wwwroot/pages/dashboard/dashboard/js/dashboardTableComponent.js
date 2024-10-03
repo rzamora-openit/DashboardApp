@@ -11,7 +11,7 @@
 		}
 	});
 
-	function dashboardTableController($q, $timeout, powerbiAPI, stateUtil, Notification, requestVerificationToken) {
+	function dashboardTableController($q, $timeout, powerbiAPI, stateUtil, Notification, requestVerificationToken, profileAPI) {
 
 		var ctrl = this;
 		ctrl.isBusy = false;
@@ -28,18 +28,47 @@
 		ctrl.shareToGroups = [];
 
 		ctrl.invalidShare = false;
+
+		ctrl.hasWritePermission = false;
 		
 		ctrl.$onInit = function () {
 
 			ctrl.componentContext.setState("loading");
 
-			$q.all([ctrl.getPowerbiReferences()])
+			$q.all([ctrl.getPowerbiReferences(), ctrl.getWritePermission()])
 				.then(function () {
 					ctrl.componentContext.setState("loaded");
-                });		
+                });
 		};
 
 		ctrl.getPowerbiReferences = function () {
+			var deferred = $q.defer();
+
+			profileAPI
+				.getWritePermission()
+				.callbacks(
+					//Success Callback
+					function (successData) {
+						ctrl.hasWritePermission = successData;
+
+						deferred.resolve();
+					},
+					//Error Callback
+					function (errorResult) {
+						Notification.error("Failed to get write permission");
+
+						ctrl.stateContext.setState('invalidActivity');
+						deferred.reject();
+					},
+					//Finally Callback
+					function () {
+					}
+				);
+
+			return deferred.promise;
+		}
+
+		ctrl.getWritePermission = function () {
 			var deferred = $q.defer();
 
 			powerbiAPI
