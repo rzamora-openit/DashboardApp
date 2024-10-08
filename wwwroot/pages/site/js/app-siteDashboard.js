@@ -231,7 +231,7 @@
 
 		service.getWritePermission = function () {
 			var serviceName = "service.accessProfileAPI.getWritePermission";
-			var url = "/api/dashboard/profile/write-permission/";
+			var url = "/api/dashboard/accessProfile/write-permission/";
 			var payload = {};
 
 			return httpControl.get(serviceName, url, payload);
