@@ -2,13 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
-using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
-using OpeniT.PowerbiDashboardApp.Models.Objects;
-using static OpeniT.PowerbiDashboardApp.Site.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
+using static OpeniT.PowerbiDashboardApp.Site.Services;
 
 namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 {
@@ -16,15 +13,15 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 	[Route("api/dashboard/[controller]")]
 	[ApiController]
 	[ValidateAntiForgeryToken]
-	public class ProfileController : ControllerBase
+	public class AccessProfileController : ControllerBase
 	{
-		private string ControllerName = "api/dashboard/" + nameof(ProfileController);
+		private string ControllerName = "api/dashboard/" + nameof(AccessProfileController);
 
 		private readonly IDataRepository dataRepository;
 		private readonly IApplicationLogger logger;
 		private readonly IAccessProfileHelper accessProfileHelper;
 
-		public ProfileController(IDataRepository dataRepository,
+		public AccessProfileController(IDataRepository dataRepository,
 			IApplicationLogger logger,
 			IAccessProfileHelper accessProfileHelper)
 		{
@@ -43,7 +40,7 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 			try
 			{
 				var hasPermission = await this.accessProfileHelper.HasPermission(owner, FeatureNames.Dashboard, Security.AccessLevelFlag.Write);
-				
+
 				await logger.LogDataAccess(activity: activity, log: $"Get success");
 				return this.Ok(hasPermission);
 			}

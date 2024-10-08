@@ -226,11 +226,11 @@
 		return service;
 	});
 
-	siteApp.factory("profileAPI", function (httpControl) {
+	siteApp.factory("accessProfileAPI", function (httpControl) {
 		var service = {};
 
 		service.getWritePermission = function () {
-			var serviceName = "service.profileAPI.getWritePermission";
+			var serviceName = "service.accessProfileAPI.getWritePermission";
 			var url = "/api/dashboard/profile/write-permission/";
 			var payload = {};
 

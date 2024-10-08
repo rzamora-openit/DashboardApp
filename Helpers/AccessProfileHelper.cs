@@ -162,7 +162,7 @@ namespace OpeniT.PowerbiDashboardApp.Helpers
 
 			var hasAccess = AccessEvaluator
 				.AssertAccessLevel(FeatureAccessHelper
-					.GetFeatureAccess(featureName), profile) > flag;
+					.GetFeatureAccess(featureName), profile) >= flag;
 			return hasAccess;
 		}
 

@@ -11,7 +11,7 @@
 		}
 	});
 
-	function dashboardTableController($q, $timeout, powerbiAPI, stateUtil, Notification, requestVerificationToken, profileAPI) {
+	function dashboardTableController($q, $timeout, powerbiAPI, stateUtil, Notification, requestVerificationToken, accessProfileAPI) {
 
 		var ctrl = this;
 		ctrl.isBusy = false;
@@ -44,18 +44,18 @@
 		ctrl.getPowerbiReferences = function () {
 			var deferred = $q.defer();
 
-			profileAPI
-				.getWritePermission()
+			powerbiAPI
+				.getPowerbiReferences()
 				.callbacks(
 					//Success Callback
 					function (successData) {
-						ctrl.hasWritePermission = successData;
+						ctrl.powerbiReferences = successData;
 
 						deferred.resolve();
 					},
 					//Error Callback
 					function (errorResult) {
-						Notification.error("Failed to get write permission");
+						Notification.error("Failed to get PowerBI References");
 
 						ctrl.stateContext.setState('invalidActivity');
 						deferred.reject();
@@ -71,18 +71,18 @@
 		ctrl.getWritePermission = function () {
 			var deferred = $q.defer();
 
-			powerbiAPI
-				.getPowerbiReferences()
+			accessProfileAPI
+				.getWritePermission()
 				.callbacks(
 					//Success Callback
 					function (successData) {
-						ctrl.powerbiReferences = successData;
+						ctrl.hasWritePermission = successData;
 
 						deferred.resolve();
 					},
 					//Error Callback
 					function (errorResult) {
-						Notification.error("Failed to get PowerBI References");
+						Notification.error("Failed to get write permission");
 
 						ctrl.stateContext.setState('invalidActivity');
 						deferred.reject();
