@@ -13,10 +13,11 @@ using System.Threading;
 using System;
 using OpeniT.PowerbiDashboardApp.Exceptions;
 using OpeniT.PowerbiDashboardApp.ViewModels.PowerBI;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 
 namespace OpeniT.PowerbiDashboardApp.Helpers
 {
-	public class PowerBIQueryHelper
+    public class PowerBIQueryHelper : IPowerBIQueryHelper
 	{
 		private readonly string apiVersion;
 		private readonly string tenantName;

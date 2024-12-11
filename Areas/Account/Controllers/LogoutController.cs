@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using System.Threading.Tasks;
@@ -15,10 +15,10 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 		private string ControllerName = nameof(LogoutController);
 
 		private readonly SignInManager<ApplicationUser> signInManager;
-		private readonly ApplicationLogger logger;
+		private readonly IApplicationLogger logger;
 
 		public LogoutController(SignInManager<ApplicationUser> signInManager,
-			ApplicationLogger logger)
+			IApplicationLogger logger)
 		{
 			this.signInManager = signInManager;
 			this.logger = logger;

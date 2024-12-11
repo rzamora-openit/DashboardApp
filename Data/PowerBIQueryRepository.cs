@@ -1,17 +1,18 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.ViewModels.Azure;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
-using OpeniT.PowerbiDashboardApp.Helpers;
 using OpeniT.PowerbiDashboardApp.ViewModels.PowerBI;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OpeniT.PowerbiDashboardApp.Data
 {
-	public class PowerBIQueryRepository
+	public class PowerBIQueryRepository : IPowerBIQueryRepository
 	{
-		private readonly PowerBIQueryHelper powerBIQueryHelper;
+		private readonly IPowerBIQueryHelper powerBIQueryHelper;
 		private readonly IConfiguration config;
 
 		private readonly string apiVersion;
@@ -24,7 +25,7 @@ namespace OpeniT.PowerbiDashboardApp.Data
 		private readonly string clientSecret;
 		private readonly string graphUri;
 
-		public PowerBIQueryRepository(PowerBIQueryHelper powerBIQueryHelper,
+		public PowerBIQueryRepository(IPowerBIQueryHelper powerBIQueryHelper,
 			IConfiguration config)
 		{
 			this.powerBIQueryHelper = powerBIQueryHelper;

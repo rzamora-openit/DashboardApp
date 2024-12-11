@@ -10,10 +10,11 @@ using Microsoft.Rest;
 using System.Linq;
 using OpeniT.PowerbiDashboardApp.ViewModels.PowerBI;
 using Microsoft.PowerBI.Api.Models;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 
 namespace OpeniT.PowerbiDashboardApp.Helpers
 {
-	public class PowerBIEmbedHelper
+    public class PowerBIEmbedHelper : IPowerBIEmbedHelper
 	{
 		private readonly string apiVersion;
 		private readonly string tenantName;

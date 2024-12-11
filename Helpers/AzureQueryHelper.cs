@@ -12,10 +12,11 @@ using Newtonsoft.Json;
 using System.Text;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using OpeniT.PowerbiDashboardApp.Exceptions;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 
 namespace OpeniT.PowerbiDashboardApp.Helpers
 {
-	public class AzureQueryHelper
+    public class AzureQueryHelper : IAzureQueryHelper
 	{
 		private readonly string apiVersion;
 		private readonly string tenantName;

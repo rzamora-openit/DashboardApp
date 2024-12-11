@@ -1,0 +1,51 @@
+﻿<div class="ra-view-header">
+	<span class="ra-nav-icon"><i class="fa fa-door-open"></i></span><span class="ra-nav-link">Access</span>
+</div>
+
+<!--invalidActivity-->
+<div ng-if="ctrl.stateContext.invalidActivity">
+	Server Error or No Access
+	<br />
+	<span ng-repeat="error in ctrl.errorData" class="text-danger">{{error}}<br /></span>
+</div>
+
+<!--loading-->
+<div ng-if="ctrl.stateContext.loading">
+	<i class="fas fa-spinner fa-spin"></i> Loading...
+</div>
+
+
+<!--table-->
+<div ng-if="ctrl.stateContext.table" st-table="featureAccess" st-safe-src="ctrl.featureAccess">
+	<div class="w-50 p-3">
+		<table class="table table-hover table-sm">
+			<thead class="thead-dark">
+				<tr>
+					<th class="padl-5 sortable" st-sort="featureName" st-sort-default style="min-width:150px">Feature</th>
+					<th class="padl-5 sortable" st-sort-default style="min-width:150px">Access Count</th>
+					<th class="padl-5 text-right" style="min-width:200px">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="feature in featureAccess">
+					<td class="">{{feature.featureName}}</td>
+					<td class="">{{feature.accesses.length}}</td>
+
+					<td class="text-right">
+						<button type="button" class="btn btn-info btn-sm" ng-click="ctrl.initShare(feature)" ng-disabled="ctrl.isBusy" title="Share"><i class="fa fa-share"></i></button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<span ng-repeat="error in ctrl.errorData" class="text-danger">{{error}}<br /></span>
+	</div>
+</div>
+
+
+<!--overlay-->
+<div class="ra-drawer ra-drawer-right" style="display:block; top: 60px; height: calc(100% - 60px)" ng-if="ctrl.overlayShareComponentShow">
+	<div class="ra-drawer-content ra-animation ra-slide-from-right p-2 pb-5">
+		<button type="button" class="btn btn-danger btn-sm" ng-click="ctrl.hideShareComponent()" ng-disabled="ctrl.isBusy"><i class="fa fa-times"></i></button>
+		<div class="p-2" feature-access-container feature-access="ctrl.targetFeature"></div>
+	</div>
+</div>

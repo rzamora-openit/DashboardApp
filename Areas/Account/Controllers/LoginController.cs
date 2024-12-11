@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
-using OpeniT.PowerbiDashboardApp.Data;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
 using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using System.Linq;
@@ -20,39 +21,42 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 
 		private readonly SignInManager<ApplicationUser> signInManager;
 		private readonly UserManager<ApplicationUser> userManager;
-		private readonly ApplicationLogger logger;
-		private readonly DataRepository dataRepository;
+		private readonly IApplicationLogger logger;
+		private readonly IDataRepository dataRepository;
+		private readonly IAccessProfileHelper accessProfileHelper;
 
 		public LoginController(SignInManager<ApplicationUser> signInManager,
 			UserManager<ApplicationUser> userManager,
-			ApplicationLogger logger,
-			DataRepository dataRepository)
+			IApplicationLogger logger,
+			IDataRepository dataRepository,
+			IAccessProfileHelper accessProfileHelper)
 		{
 			this.signInManager = signInManager;
 			this.userManager = userManager;
 			this.logger = logger;
 			this.dataRepository = dataRepository;
+			this.accessProfileHelper = accessProfileHelper;
 		}
 
 		[Route("[controller]")]
 		[Route("[area]/[controller]")]
 		public async Task<IActionResult> Index(string returnUrl)
 		{
-            var activity = new ApplicationActivity() { Controller = ControllerName, Action = $"{ControllerName}.Index/{returnUrl}" };
+			var activity = new ApplicationActivity() { Controller = ControllerName, Action = $"{ControllerName}.Index/{returnUrl}" };
 
-            var owner = this.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+			var owner = this.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
 			if (owner != null)
 			{
 				return LocalRedirect("/");
 			}
 
-            var ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+			var ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 			var redirectUrl = Url.Action("ExternalLoginCallback", "Login", new { area = "Account", ReturnUrl = returnUrl });
 			var properties = signInManager.ConfigureExternalAuthenticationProperties(ExternalLogins[0].Name, redirectUrl);
 
-            await logger.LogNavigation(activity: activity, log: $"Authentication challenged from Url [{returnUrl}]");
+			await logger.LogNavigation(activity: activity, log: $"Authentication challenged from Url [{returnUrl}]");
 			return new ChallengeResult(ExternalLogins[0].Name, properties);
-        }
+		}
 
 		public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
 		{
@@ -125,6 +129,8 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 				{
 					await this.dataRepository.SetToRole(email, Site.ConstantValues.InternalUser);
 				}
+
+				await accessProfileHelper.FetchAndStoreInfo(applicationUser.InternalAccount, true);
 
 				return LocalRedirect(returnUrl);
 			}

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpeniT.PowerbiDashboardApp.Data;
-using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using System.Threading.Tasks;
 
@@ -13,11 +13,11 @@ namespace OpeniT.PowerbiDashboardApp.Areas.Account.Controllers
 	{
 		private string ControllerName = nameof(AccessDenied);
 
-		private readonly ApplicationLogger logger;
-		private readonly DataRepository dataRepository;
+		private readonly IApplicationLogger logger;
+		private readonly IDataRepository dataRepository;
 
-		public AccessDenied(ApplicationLogger logger,
-			DataRepository dataRepository)
+		public AccessDenied(IApplicationLogger logger,
+			IDataRepository dataRepository)
 		{
 			this.logger = logger;
 			this.dataRepository = dataRepository;

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using OpeniT.PowerbiDashboardApp.Security.Model
+@using OpeniT.PowerbiDashboardApp.Site
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -40,13 +42,43 @@
 
 					</span>
 				</div>
-				<div class="ra-nav-list pt-2">
-					<div class="ra-nav-item @(ViewContext.ViewData[nameof(DashboardController)] != null ? "ra-nav-item-active":"" )">
-						<a href="/dashboard">
-							<span class="ra-nav-icon"><i class="fa fa-chart-pie"></i></span><span class="ra-nav-link">Dashboard</span>
-						</a>
-					</div>
-				</div>
+				@{
+					var accessProfile = (AccessProfile)ViewContext.ViewData["Profile"];
+					var serviceGroups = Services.GenerateServiceGroups(accessProfile);
+					foreach (var serviceGroup in serviceGroups.OrderBy(x => x.Index))
+					{
+						if (serviceGroup.Services.Count > 1)
+						{
+							<div class="ra-nav-group">
+								<div class="ra-nav-item ra-nav-group-header" style="cursor:pointer;" data-toggle="collapse" data-target="#@(serviceGroup.Name.Replace(" ", "").ToLower())-group">
+									<span class="ra-nav-icon"><i class="fa fa-fw @(serviceGroup.Icon)"></i></span><span class="ra-nav-link">@(serviceGroup.Name)</span>
+									<i class="fa ra-collapse-indicator"></i>
+								</div>
+								<div class="collapse ra-group-list" id="@(serviceGroup.Name.Replace(" ","").ToLower())-group">
+									@foreach (var service in serviceGroup.Services.OrderBy(x => x.Index))
+									{
+										<div class="ra-nav-item @(ViewContext.ViewData[service.Controller] != null ? "ra-nav-item-active":"" )">
+											<a href="@(service.Uri)">
+												<span class="ra-nav-icon"><i class="fa fa-fw @(service.Icon)"></i></span><span class="ra-nav-link">@(service.Name)</span>
+											</a>
+										</div>
+									}
+								</div>
+							</div>
+						}
+						else
+						{
+							@foreach (var service in serviceGroup.Services.OrderBy(x => x.Index))
+							{
+								<div class="ra-nav-item @(ViewContext.ViewData[service.Controller] != null ? "ra-nav-item-active":"" )">
+									<a href="@(service.Uri)">
+										<span class="ra-nav-icon"><i class="fa fa-fw @(service.Icon)"></i></span><span class="ra-nav-link">@(service.Name)</span>
+									</a>
+								</div>
+							}
+						}
+					}
+				}
 			</div>
 			<div class="ra-body">
 

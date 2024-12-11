@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpeniT.PowerbiDashboardApp.Areas.Dashboard.Controllers;
-using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models;
 using OpeniT.PowerbiDashboardApp.Models.Accounts;
 using OpeniT.PowerbiDashboardApp.Models.Application;
@@ -14,10 +13,10 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Web
 	public class HomeController : DashboardBaseController
 	{
 		private string ControllerName = nameof(HomeController);
-		private readonly ApplicationLogger logger;
+		private readonly IApplicationLogger logger;
 		private readonly SignInManager<ApplicationUser> signInManager;
 
-		public HomeController(ApplicationLogger logger,
+		public HomeController(IApplicationLogger logger,
 			SignInManager<ApplicationUser> signInManager)
 		{
 			this.logger = logger;

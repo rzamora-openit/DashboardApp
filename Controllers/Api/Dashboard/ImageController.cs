@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OpeniT.PowerbiDashboardApp.Data;
-using OpeniT.PowerbiDashboardApp.Helpers;
+using OpeniT.PowerbiDashboardApp.Data.Interfaces;
+using OpeniT.PowerbiDashboardApp.Helpers.Interfaces;
 using OpeniT.PowerbiDashboardApp.Models.Application;
 using OpeniT.PowerbiDashboardApp.Models.Files;
 using System;
@@ -18,13 +18,13 @@ namespace OpeniT.PowerbiDashboardApp.Controllers.Api.Dashboard
 	{
 		private string ControllerName = "api/dashboard/" + nameof(ImageController);
 
-		private readonly DataRepository dataRepository;
-		private readonly AzureQueryRepository azureQuery;
-		private readonly ApplicationLogger logger;
+		private readonly IDataRepository dataRepository;
+		private readonly IAzureQueryRepository azureQuery;
+		private readonly IApplicationLogger logger;
 
-		public ImageController(DataRepository dataRepository,
-			AzureQueryRepository azureQuery,
-			ApplicationLogger logger)
+		public ImageController(IDataRepository dataRepository,
+			IAzureQueryRepository azureQuery,
+			IApplicationLogger logger)
 		{
 			this.dataRepository = dataRepository;
 			this.azureQuery = azureQuery;

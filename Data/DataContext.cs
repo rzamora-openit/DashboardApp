@@ -24,5 +24,11 @@ namespace OpeniT.PowerbiDashboardApp.Data
 
 		public DbSet<PowerbiReference> PowerbiReferences { get; set; }
 
+		public DbSet<FeatureAccess> FeatureAccesses { get; set; }
+		public DbSet<Access> Accesses { get; set; }
+
+		public DbSet<Sharing> Sharings { get; set; }
+		public DbSet<UserShare> UserShares { get; set; }
+		public DbSet<GroupShare> GroupShares { get; set; }
 	}
 }

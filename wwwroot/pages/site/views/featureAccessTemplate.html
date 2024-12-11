@@ -1,0 +1,222 @@
+﻿<div class="mb-2"></div>
+<h3>{{featureAccess.featureName}} Feature Access</h3>
+
+<div class="mb-3"></div>
+
+<!--share Role Table -->
+<table class="table table-hover table-sm m-auto">
+	<thead class="thead-dark">
+		<tr>
+			<th class="padl-5 sortable" style="min-width:150px">Roles</th>
+			<th class="padl-5 sortable" style="min-width:75px">Access Level</th>
+			<th class="padl-5 text-right" style="min-width: 75px">
+				<button type="button" class="btn btn-success btn-sm" ng-click="ctrl.initShareRole()" ng-disabled="ctrl.isBusy" title="Share" data-toggle="modal" data-target="#shareRoleModal"><i class="fa fa-plus"></i> Add/Update</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-if="!(featureAccess.accesses | filterBy: ['type']: 'Role').length">
+			<td class="" colspan="3">No Role Assignments</td>
+		</tr>
+		<tr ng-repeat="access in featureAccess.accesses | filterBy: ['type']: 'Role': true">
+			<td class="">{{access.reference}}</td>
+			<td class="">{{getAccessLevelByFlag(access.level)}}</td>
+			<td class="text-right">
+				<button type="button" class="btn btn-danger btn-sm" ng-click="ctrl.initDeleteAccess(access)" ng-disabled="ctrl.isBusy" title="Remove" data-toggle="modal" data-target="#deleteAccessModal"><i class="fa fa-trash"></i></button>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div class="mb-4"></div>
+
+<!--share Group Table -->
+<table class="table table-hover table-sm m-auto">
+	<thead class="thead-dark">
+		<tr>
+			<th class="padl-5 sortable" style="min-width:150px">Groups</th>
+			<th class="padl-5 sortable" style="min-width:75px">Access Level</th>
+			<th class="padl-5 text-right" style="min-width: 75px">				
+				<button type="button" class="btn btn-success btn-sm" ng-click="ctrl.initShareGroup()" ng-disabled="ctrl.isBusy" title="Share" data-toggle="modal" data-target="#shareGroupModal"><i class="fa fa-plus"></i> Add/Update</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-if="!(featureAccess.accesses | filterBy: ['type']: 'Group').length">
+			<td class="" colspan="3">No Group Assignments</td>
+		</tr>
+		<tr ng-repeat="access in (featureAccess.accesses | filterBy: ['type']: 'Group')">
+			<td class="">{{access.reference}}</td>
+			<td class="">{{getAccessLevelByFlag(access.level)}}</td>
+			<td class="text-right">
+				<button type="button" class="btn btn-danger btn-sm" ng-click="ctrl.initDeleteAccess(access)" ng-disabled="ctrl.isBusy" title="Remove" data-toggle="modal" data-target="#deleteAccessModal"><i class="fa fa-trash"></i></button>
+			</td>
+		</tr>		
+	</tbody>
+</table>
+<div class="mb-4"></div>
+
+<!--share User Table -->
+<table class="table table-hover table-sm m-auto">
+	<thead class="thead-dark">
+		<tr>
+			<th class="padl-5 sortable" style="min-width: 150px">User</th>
+			<th class="padl-5 sortable" style="min-width:75px">Access Level</th>
+			<th class="padl-5 text-right" style="min-width: 75px">				
+				<button type="button" class="btn btn-success btn-sm" ng-click="	ctrl.initShareUser()" ng-disabled="ctrl.isBusy" title="Share" data-toggle="modal" data-target="#shareUserModal"><i class="fa fa-plus"></i> Add/Update</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-if="!(featureAccess.accesses | filterBy: ['type']: 'User').length">
+			<td class="" colspan="3">No User Assignments</td>
+		</tr>
+		<tr ng-repeat="access in (featureAccess.accesses | filterBy: ['type']: 'User')">
+			<td class="">
+				<img class="ra-nav-img rounded-circle" ng-src="/api/dashboard/azureaccess/ref/{{access.azureId}}/photo" onerror="this.onerror=null; this.src='/images/ImgPlaceholder.png'" alt="" style="width:30px; height:30px;"> 
+				<span class="ml-1">{{access.reference}}</span>
+			</td>
+			<td class="">{{getAccessLevelByFlag(access.level)}}</td>
+			<td class="text-right">
+				<button type="button" class="btn btn-danger btn-sm" ng-click="ctrl.initDeleteAccess(access)" ng-disabled="ctrl.isBusy" title="Remove" data-toggle="modal" data-target="#deleteAccessModal"><i class="fa fa-trash"></i></button>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div class="mb-4"></div>
+
+<!--share Role Modal -->
+<div class="modal fade" id="shareRoleModal" tabindex="-1" role="dialog" aria-labelledby="shareRoleModalLabel" aria-hidden="true">
+	<div class="modal-dialog  modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="shareGroupModalLabel">Share to Role</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Role <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="role-select" class="form-control form-control-sm" ng-model="ctrl.addShareRoleModel.role" style="width:100%">
+								<option ng-repeat="x in ctrl.roles | orderBy:'value'" ng-value="x">{{x.value}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Access <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="share-user-select" class="form-control form-control-sm" ng-model="ctrl.addShareRoleModel.level" style="width:100%">
+								<option ng-repeat="x in accessLevelFlags | orderBy:'flag'" ng-value="x.flag">{{x.value}}</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="">Cancel</button>
+				<button type="button" class="btn btn-success" ng-click="ctrl.addRoleAccess(ctrl.addShareRoleModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareRoleModel.role || ctrl.addShareRoleModel.level==null">Add/Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--share Group Modal -->
+<div class="modal fade" id="shareGroupModal" tabindex="-1" role="dialog" aria-labelledby="shareGroupModalLabel" aria-hidden="true">
+	<div class="modal-dialog  modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="shareGroupModalLabel">Share to Group</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">				
+				<form>
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Group Mail <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="group-select" class="form-control form-control-sm" style="width: 100%;">
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Access <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="share-user-select" class="form-control form-control-sm" ng-model="ctrl.addShareGroupModel.level" style="width:100%">
+								<option ng-repeat="x in accessLevelFlags | orderBy:'flag'" ng-value="x.flag">{{x.value}}</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="">Cancel</button>
+				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareGroupModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareGroupModel.azureId || ctrl.addShareGroupModel.level == null">Add/Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--share User Modal -->
+<div class="modal fade" id="shareUserModal" tabindex="-1" role="dialog" aria-labelledby="shareUserModalLabel" aria-hidden="true">
+	<div class="modal-dialog  modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="shareUserModalLabel">Share to User</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+
+				<form>
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">User <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="user-select" class="form-control form-control-sm" style="width: 100%;">
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group attn row">
+						<label class="control-label col-3 text-right">Access <span style="color:red">*</span>:</label>
+						<div class="col-9">
+							<select id="share-user-select" class="form-control form-control-sm" ng-model="ctrl.addShareUserModel.level" style="width:100%">
+								<option ng-repeat="x in accessLevelFlags | orderBy:'flag'" ng-value="x.flag">{{x.value}}</option>
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" ng-click="">Cancel</button>
+				<button type="button" class="btn btn-success" ng-click="ctrl.addAccess(ctrl.addShareUserModel)" ng-disabled="ctrl.isBusy || !ctrl.addShareUserModel.azureId || ctrl.addShareUserModel.level == null">Add/Update</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--delete Access Modal -->
+<div class="modal fade" id="deleteAccessModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccessModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="deleteAccessModalLabel">Remove Access</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to remove [<strong>{{getAccessLevelByFlag(ctrl.deleteAccessTarget.level)}}</strong>] Access from <strong>{{ctrl.deleteAccessTarget.reference}}</strong>?
+			</div>			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" ng-click="ctrl.deleteAccess(ctrl.deleteAccessTarget)" ng-disabled="ctrl.isBusy">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
